@@ -29,8 +29,14 @@ class GildedRose(object):
         if item.quality > 0:
             item.quality = max(0, item.quality - 1)
 
-    def is_item(self, item): 
-        return item.name in ("Aged Brie", "Backstage passes to a TAFKAL80ETC concert")
+    def is_item(self, item):
+        return self.is_brie(item) or self.is_backstage(item)
+
+    def is_backstage(self, item): 
+        return item.name == "Backstage passes to a TAFKAL80ETC concert"
+
+    def is_brie(self, item):
+        return item.name == "Aged Brie"
 
     def update_quality(self):
         for item in self.items:
@@ -40,7 +46,7 @@ class GildedRose(object):
                         self.decrease_quality(item)
             else:
                 self.increase_quality(item)
-                if item.name == "Backstage passes to a TAFKAL80ETC concert":
+                if self.is_backstage(item):
                     if item.sell_in < 11:
                         self.increase_quality(item)
                     if item.sell_in < 6:
@@ -50,8 +56,8 @@ class GildedRose(object):
                 item.sell_in -= 1
 
             if self.check_item(item):
-                if item.name != "Aged Brie":
-                    if item.name != "Backstage passes to a TAFKAL80ETC concert":
+                if not self.is_brie(item):
+                    if not self.is_backstage(item):
                         if item.quality > 0:
                             if not self.is_sulfuras(item):
                                 self.decrease_quality(item)
